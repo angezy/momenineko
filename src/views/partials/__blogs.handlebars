@@ -1,0 +1,33 @@
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center mb-5">
+				<div class="col-md-7 heading-section text-center ftco-animate">
+					<span class="subheading">وبلاگ</span>
+					<h2>وبلاگ اخیر</h2>
+				</div>
+			</div>
+			<div class="row d-flex">
+				{{#each blogs}}
+				          <div class="col-md-4 d-flex ftco-animate">
+
+				<div class="blog-entry justify-content-end">
+					<div class="text text-center">
+						<a href=/blog/{{this.postId}} class="block-20 img"
+							style="background-image: url({{this.Imag}});">
+						</a>
+						<div class="meta text-center mb-2 d-flex align-items-center justify-content-center">
+							<div>
+								<span class="mos">{{this.date}}</span>
+							</div>
+						</div>
+						<h3 class="heading mb-3"><a href="#">{{this.Title}}</a></h3>
+						<p>{{this.Description}}</p>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+
+		</div>
+		</div>
+	</section>
+
