@@ -1,0 +1,116 @@
+<section class="ftco-appointment ftco-section img" style="background-image: url(/public/images/bg_2.jpg);">
+	<div class="overlay"></div>
+	<div class="container rtl">
+		<div class="row">
+			<div class="col-md-6 half ftco-animate">
+				<h2 class="mb-4">پیام بفرستید و با ما در تماس باشید!</h2>
+				<form id="contactForm" action="/api/contactus" method="POST" class="appointment">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<input type="text" name="FullName" class="form-control" placeholder="نام شما">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<input type="email" name="Email" class="form-control" placeholder="ایمیل">
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<div class="form-field">
+									<div class="select-wrap">
+										<div class="icon"><span class="fa fa-chevron-down"></span></div>
+										<select name="subject" id="" class="form-control">
+											<option value="">خدمات</option>
+											<option value="مشکل رابطه">مشکل رابطه</option>
+											<option value="مشاوره زوجین">مشاوره زوجین</option>
+											<option value="درمان افسردگی">درمان افسردگی</option>
+											<option value="مشکل خانوادگی">مشکل خانوادگی</option>
+											<option value="مشکل شخصی">مشکل شخصی</option>
+											<option value="مشکل کسب و کار">مشکل کسب و کار</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<textarea name="message" id="" cols="30" rows="7" class="form-control"
+									placeholder="پیام"></textarea>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<button type="submit"  class="btn btn-primary py-3 px-4 sc"><span
+									class="fb"></span>ارسال پیام</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div id="responseMessages" class="mt-4"></div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+	document.getElementById('contactForm').addEventListener('submit', async function (event) {
+		event.preventDefault();
+		block();
+		son();
+		const formData = new FormData(this);
+		const data = Object.fromEntries(formData.entries());
+
+		// Debugging logs
+		console.log('Form data:', data);
+
+		try {
+			const response = await fetch('/api/contactus', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
+
+			const result = await response.json();
+
+			// Debugging logs
+			console.log('Server response:', result);
+
+			if (response.ok) {
+				Swal.fire({
+					icon: 'success',
+					title: 'پیام ارسال شد',
+					text: result.message,
+				});
+				this.reset();
+				bon();
+				soff();
+				document.getElementById('responseMessages').innerHTML += `
+					<div class="alert alert-success mt-2">
+						<strong>${result.message}</strong>
+					</div>`;
+			} else {
+				Swal.fire({
+					icon: 'error',
+					title: 'خطا',
+					text: result.error || 'ارسال پیام با مشکل مواجه شد',
+				});
+				bon();
+				soff();
+			}
+		} catch (error) {
+			console.error('Error during form submission:', error);
+			Swal.fire({
+				icon: 'error',
+				title: 'خطا',
+				text: 'ارسال پیام با مشکل مواجه شد',
+			});
+			bon();
+			soff();
+		}
+	});
+</script>

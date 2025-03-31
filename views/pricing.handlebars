@@ -1,0 +1,169 @@
+<title>{{title}}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="مشاور - بهترین شبکه تامین مالی مشاوره در سراسر جهان.">
+<meta name="keywords" content="مشاور، مشاوره، تامین مالی، شبکه، جهانی">
+<meta name="author" content="نام شما">
+<link rel="icon" type="image/png" href="/public/images/favicon.png">
+</head>
+
+<body class="text-right">
+	{{> __navbar}}
+	<section class="hero-wrap hero-wrap-2" style="background-image: url('/public/images/bg_5.jpg');"
+		data-stellar-background-ratio="0.5">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row no-gutters slider-text align-items-end justify-content-center">
+				<div class="col-md-9 ftco-animate mb-5 text-center">
+					<p class="breadcrumbs mb-0"><span class="mr-2"><a href="index.html">خانه <i
+									class="fa fa-chevron-right"></i></a></span> <span>قیمت‌گذاری <i
+								class="fa fa-chevron-right"></i></span></p>
+					<h1 class="mb-0 bread">قیمت‌گذاری و پلن‌ها</h1>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="ftco-section bg-light">
+		<div class="container">
+			<div class="row justify-content-center pb-5 mb-3">
+				<div class="col-md-7 heading-section text-center ftco-animate">
+					<span class="subheading">قیمت‌ها و پلن‌ها</span>
+					<h2>پکیج‌های مقرون‌به‌صرفه</h2>
+				</div>
+			</div>
+			<div class="row">
+
+				<div class="col-md-6 ftco-animate d-flex">
+					<div class="block-7 w-100">
+						<div class="text-center">
+							<span class="price"><sup>$</sup> <span class="number">59</span> <sub>/ماه</sub></span>
+							<span class="excerpt d-block">مشاوره آنلاین</span>
+							<ul class="pricing-text mb-5">
+								<li><span class="fa fa-check mr-2"></span>دسترسی آسان</li>
+								<li><span class="fa fa-check mr-2"></span>مشاوره از راه دور</li>
+								<li><span class="fa fa-check mr-2"></span>پشتیبانی 24/7</li>
+							</ul>
+
+							<a href="#" class="btn btn-primary d-block px-2 py-3" data-toggle="modal" data-target="#onlineVisitModal" data-plan="مشاوره آنلاین" data-price="59">شروع کنید</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 ftco-animate d-flex">
+					<div class="block-7 w-100">
+						<div class="text-center">
+							<span class="price"><sup>$</sup> <span class="number">99</span> <sub>/ماه</sub></span>
+							<span class="excerpt d-block">مشاوره حضوری</span>
+							<ul class="pricing-text mb-5">
+								<li><span class="fa fa-check mr-2"></span>جلسات حضوری</li>
+								<li><span class="fa fa-check mr-2"></span>تعامل مستقیم</li>
+								<li><span class="fa fa-check mr-2"></span>برنامه‌ریزی شخصی</li>
+							</ul>
+
+							<a href="#" class="btn btn-primary d-block px-2 py-3" data-toggle="modal" data-target="#consultationModal" data-plan="مشاوره حضوری" data-price="99">شروع کنید</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+
+	<!-- End Booking Modal -->
+
+	{{> __reviews}}
+
+	{{> __contactform}}
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="consultationModal" tabindex="-1" role="dialog" aria-labelledby="consultationModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="consultationModalLabel">انتخاب نوبت مشاوره تلفنی</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+ <!-- Elfsight Appointment Booking | Untitled Appointment Booking -->
+<script src="https://static.elfsight.com/platform/platform.js" async></script>
+<div class="elfsight-app-6ca5d7d9-245e-446e-9a5f-e2a7d0aaf964" data-elfsight-app-lazy></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+        <button type="button" class="btn btn-primary">رزرو نوبت</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Online Visit -->
+<div class="modal fade" id="onlineVisitModal" tabindex="-1" role="dialog" aria-labelledby="onlineVisitModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="onlineVisitModalLabel">انتخاب نوبت مشاوره آنلاین</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>نرگس مومنی نکو</p>
+        <p>در زمان نوبت: جلسه آنلاین از طریق پلتفرم برگزار می‌شود.</p>
+        <div class="calendar">
+         {{#each (filterTodayOrFuture (sort onlineVisitTime 'VisitDate'))}}
+            <button class="btn btn-primary d-block px-2 py-3 online-visit-date-btn" data-times="{{this.Times}}">{{convertToShamsi this.VisitDate}}</button>
+            {{/each}}
+        </div>
+        <div class="time-slots">
+            <!-- Time slots will be dynamically updated -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+        <button type="button" class="btn btn-primary">رزرو نوبت</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const onlineDateButtons = document.querySelectorAll('.online-visit-date-btn');
+        const onlineTimeSlotsContainer = document.querySelector('.time-slots');
+
+        onlineDateButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Clear existing time slots
+                onlineTimeSlotsContainer.innerHTML = '';
+
+                // Get times from the data attribute
+                const times = button.getAttribute('data-times').split(',');
+
+                // Populate time slots
+                times.forEach(time => {
+                    const timeButton = document.createElement('button');
+                    timeButton.textContent = time;
+                    onlineTimeSlotsContainer.appendChild(timeButton);
+                });
+
+                // Highlight the selected date
+                onlineDateButtons.forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

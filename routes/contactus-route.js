@@ -9,17 +9,19 @@ router.use(bodyParser.json());
 
 // Handle POST request for contact form submission
 router.post('/contactus', async (req, res) => {
-  console.log('Incoming request body:', req.body); // Log the incoming request body
   try {
+    console.log('Incoming request body:', req.body); // Debugging log
+
     const { FullName, Email, subject, message } = req.body;
 
     // Validate required fields
     if (!FullName || !Email || !subject || !message) {
-      return res.status(400).json({ error: 'All fields are required' });
+      console.warn('Validation failed:', { FullName, Email, subject, message }); // Debugging log
+      return res.status(400).json({ error: 'همه گزینه ها الزامی است' });
     }
 
     // Prepare email content
-    const recipients = [{ name: 'Recipient', email: process.env.RECIPIENT_EMAIL1}];
+    const recipients = [{ name: 'Recipient', email: process.env.RECIPIENT_EMAIL1 }];
     const emailSubject = `New Contact Form Submission from ${FullName}`;
     const emailText = `Name: ${FullName}\nEmail: ${Email}\nMessage: ${message}`;
     const emailHtml = `
@@ -29,13 +31,16 @@ router.post('/contactus', async (req, res) => {
       <p><strong>Message:</strong> ${message}</p>
     `;
 
+    // Debugging log for email content
+    console.log('Email content:', { recipients, emailSubject, emailText });
+
     // Send email using the mailer.js module
     await sendEmail(recipients, emailSubject, emailText, emailHtml);
 
-    res.status(200).json({ message: 'Message sent successfully' });
+    res.status(200).json({ message: 'پیام شما با موفقیت ارسال شد' });
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Failed to send message' });
+    console.error('Error sending email:', error); // Debugging log
+    res.status(500).json({ error: 'ارسال پیام با مشکل مواجه شد. لطفاً دوباره تلاش کنید.' });
   }
 });
 

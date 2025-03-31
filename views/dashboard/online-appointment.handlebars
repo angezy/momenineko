@@ -1,0 +1,377 @@
+<script src="https://unpkg.com/persian-date@latest/dist/persian-date.js"></script>
+<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.css" rel="stylesheet" />
+
+
+</head>
+
+<body class="g-sidenav-show rtl  bg-gray-100">
+  <div class="min-height-300 bg-primary position-absolute w-100"></div>
+
+  {{> __dsidenavf}}
+
+  <main class="main-content position-relative border-radius-lg overflow-hidden">
+    <!-- Navbar -->
+    {{> __dashnavfa}}
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+
+
+
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <h6>مدیریت نوبت‌های انلاین</h6>
+            <button class="btn bg-gradient-dark mb-0" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+              <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;نوبت جدید
+            </button>
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">وضعیت</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"> تاریخ ویزیت</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"> ساعت ویزیت</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">شماره تلفن</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">نام بیمار</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">کد ملی</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ویرایش</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each (filterTodayOrFuture (sort VistTime 'VisitDate'))}}
+                  <tr>
+                    <td>{{this.Status}}</td>
+                    <td>{{convertToShamsi this.VisitDate}}</td>
+                    <td>{{this.VTime}}</td>
+                    <td>{{this.PPhone}}</td>
+                    <td>{{this.PName}}</td>
+                    <td>{{this.NationalCode}}</td>
+                    <td>
+                      <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                        data-bs-target="#editAppointmentModal" data-id="{{this.VisitID}}" data-name="{{this.PName}}"
+                        data-phone="{{this.PPhone}}" data-vtime="{{this.VTime}}" data-status="{{this.Status}}"
+                        data-visitdate={{convertToShamsi this.VisitDate}} data-nationalcode="{{this.NationalCode}}">
+                        ویرایش
+                      </button>
+                      <button class="btn btn-sm btn-danger delete-appointment-btn" data-id="{{this.VisitID}}">
+                        حذف
+                      </button>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Appointment Modal -->
+      <div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="addAppointmentForm">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addAppointmentModalLabel">افزودن نوبت جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="patientName" class="form-label">نام بیمار</label>
+                  <input type="text" class="form-control" id="patientName" name="patientName">
+                </div>
+                <div class="mb-3">
+                  <label for="phone" class="form-label">شماره تلفن</label>
+                  <input type="text" class="form-control" id="phone" name="phone">
+                </div>
+                <div class="mb-3">
+                  <label for="nationalCode" class="form-label">کد ملی</label>
+                  <input type="text" class="form-control" id="nationalCode" name="nationalCode">
+                </div>
+                <div class="mb-3">
+                  <label for="visitDate" class="form-label">تاریخ و ساعت ویزیت</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-calendar-alt"></i>
+                    </span>
+                    <input type="text" class="form-control" id="visitDate" name="VisitDate" placeholder="تاریخ"
+                      required>
+                    <span class="input-group-text">
+                      <i class="fas fa-clock"></i>
+                    </span>
+                    <input type="text" class="form-control" id="visitTime" name="VTime" placeholder="ساعت" required>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="status" class="form-label">وضعیت</label>
+                  <select class="form-control" id="status" name="status" required>
+                    <option value="رزرو شده">رزرو شده</option>
+                    <option value="در دسترس">در دسترس</option>
+                    <option value="ویزیت شده">ویزیت شده</option>
+                    <option value="کنسلی">کنسلی</option>
+
+
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+                <button type="submit" class="btn btn-primary">ذخیره نوبت</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Appointment Modal -->
+      <div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-labelledby="editAppointmentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="editAppointmentForm">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel">ویرایش نوبت</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="editAppointmentId" name="id">
+                <div class="mb-3">
+                  <label for="editPatientName" class="form-label">نام بیمار</label>
+                  <input type="text" class="form-control" id="editPatientName" name="patientName">
+                </div>
+                <div class="mb-3">
+                  <label for="editPhone" class="form-label">شماره تلفن</label>
+                  <input type="text" class="form-control" id="editPhone" name="phone">
+                </div>
+                <div class="mb-3">
+                  <label for="editNationalCode" class="form-label">کد ملی</label>
+                  <input type="text" class="form-control" id="editNationalCode" name="nationalCode">
+                </div>
+                <div class="mb-3">
+                  <label for="visitDateTime" class="form-label">تاریخ و ساعت ویزیت</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-calendar-alt"></i>
+                    </span>
+                    <input type="text" class="form-control" id="VisitDate" name="VisitDate" placeholder="تاریخ"
+                      required>
+                    <span class="input-group-text">
+                      <i class="fas fa-clock"></i>
+                    </span>
+                    <input type="text" class="form-control" id="VisitTime" name="VTime" placeholder="ساعت" required>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="editStatus" class="form-label">وضعیت</label>
+                  <select class="form-control" id="editStatus" name="status" required>
+                    <option value="رزرو شده">رزرو شده</option>
+                    <option value="در دسترس">در دسترس</option>
+                    <option value="ویزیت شده">ویزیت شده</option>
+                    <option value="کنسلی">کنسلی</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+                <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div class="modal fade" id="deleteAppointmentModal" tabindex="-1" aria-labelledby="deleteAppointmentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" action="/api/appointments/delete" id="deleteAppointmentForm">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteAppointmentModalLabel">حذف نوبت</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>آیا مطمئن هستید که می‌خواهید این نوبت را حذف کنید؟ این عمل قابل بازگشت نیست.</p>
+                <input type="hidden" id="deleteAppointmentId" name="id">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+                <button type="submit" class="btn btn-danger">حذف</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Initialize Persian date picker for the "add appointment" modal
+          $("#visitDate").persianDatepicker({
+            format: 'YYYY-MM-DD',
+            initialValue: false,
+          });
+
+          // Initialize Persian time picker for the "add appointment" modal
+          $("#visitTime").persianDatepicker({
+            format: 'HH:mm',
+            onlyTimePicker: true,
+            initialValue: false,
+          });
+
+          $("#VisitDate").persianDatepicker({
+            format: 'YYYY-MM-DD',
+            initialValue: false,
+          });
+
+          $("#VisitTime").persianDatepicker({
+            format: 'HH:mm',
+            onlyTimePicker: true,
+            initialValue: false,
+          });
+
+          // Handle "Add Appointment" form submission
+          $('#addAppointmentForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+              patientName: $('#patientName').val(),
+              phone: $('#phone').val(),
+              VisitDate: $('#visitDate').val(),
+              VTime: $('#visitTime').val(),
+              status: $('#status').val(),
+              nationalCode: $('#nationalCode').val(), // Added field
+            };
+
+            $.ajax({
+              url: '/api/online-addappo',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(formData),
+              success: function (response) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'موفقیت',
+                  text: 'نوبت با موفقیت اضافه شد.',
+                }).then(() => {
+                  location.reload(); // Reload the page to reflect changes
+                });
+              },
+              error: function (xhr) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'خطا',
+                  text: xhr.responseJSON?.error || 'خطای ناشناخته',
+                });
+              },
+            });
+          });
+
+
+          // Populate the "Edit Appointment" modal with data
+          $('#editAppointmentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('id');
+            var name = button.data('name');
+            var phone = button.data('phone');
+            var vtime = button.data('vtime');
+            var status = button.data('status');
+            var visitDate = button.data('visitdate');
+            var nationalCode = button.data('nationalcode'); // Added field
+
+            var modal = $(this);
+            modal.find('#editAppointmentId').val(id);
+            modal.find('#editPatientName').val(name);
+            modal.find('#editPhone').val(phone);
+            modal.find('#VisitDate').val(visitDate);
+            modal.find('#VisitTime').val(vtime);
+            modal.find('#editStatus').val(status);
+            modal.find('#editNationalCode').val(nationalCode); // Set National Code
+          });
+
+          // Handle "Edit Appointment" form submission
+          $('#editAppointmentForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+              id: $('#editAppointmentId').val(),
+              patientName: $('#editPatientName').val(),
+              phone: $('#editPhone').val(),
+              VisitDate: $('#VisitDate').val(),
+              VTime: $('#VisitTime').val(),
+              status: $('#editStatus').val(),
+              nationalCode: $('#editNationalCode').val(), // Added field
+            };
+
+            $.ajax({
+              url: '/api/online-editappo',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(formData),
+              success: function (response) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'موفقیت',
+                  text: 'نوبت با موفقیت ویرایش شد.',
+                }).then(() => {
+                  location.reload(); // Reload the page to reflect changes
+                });
+              },
+              error: function (xhr) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'خطا',
+                  text: xhr.responseJSON?.error || 'خطای ناشناخته',
+                });
+              },
+            });
+          });
+
+          // Handle "Delete Appointment" button click
+          $('.delete-appointment-btn').on('click', function () {
+            const appointmentId = $(this).data('id');
+
+            Swal.fire({
+              title: 'آیا مطمئن هستید؟',
+              text: 'این عمل قابل بازگشت نیست!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'بله، حذف کن',
+              cancelButtonText: 'لغو',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                $.ajax({
+                  url: '/api/online-deleteappo',
+                  method: 'DELETE',
+                  contentType: 'application/json',
+                  data: JSON.stringify({ id: appointmentId }),
+                  success: function (response) {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'حذف شد!',
+                      text: 'نوبت با موفقیت حذف شد.',
+                    }).then(() => {
+                      location.reload(); // Reload the page to reflect changes
+                    });
+                  },
+                  error: function (xhr) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'خطا',
+                      text: xhr.responseJSON?.error || 'خطای ناشناخته',
+                    });
+                  },
+                });
+              }
+            });
+          });
+        });
+      </script>

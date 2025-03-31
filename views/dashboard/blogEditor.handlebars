@@ -1,0 +1,278 @@
+  <script src="https://cdn.tiny.cloud/1/x9x00a5xq0kwa094vr2xm1x1huqhc13p7iiwraw50k8tt64g/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+</head>
+
+<body class="g-sidenav-show rtl  bg-gray-100">
+  <div class="min-height-300 bg-primary position-absolute w-100"></div>
+ 
+    {{> __dsidenavf}}
+
+  <main class="main-content position-relative border-radius-lg overflow-hidden">
+    <!-- Navbar -->
+     {{> __dashnavfa}}
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+
+
+
+<div class="row">
+  <div class="col-md-12 mt-4">
+    <div class="card">
+      <div class="card-header pb-0 p-3">
+        <div class="row">
+          <div class="col-6 d-flex align-items-center">
+            <h6 class="mb-0">ویرایش مقالات</h6>
+          </div>
+          <div class="col-6 text-end">
+            <a class="btn bg-gradient-dark mb-0" href="#" data-bs-toggle="modal" data-bs-target="#addBlogModal">
+              <i class="fas fa-plus"></i>&nbsp;&nbsp;افزودن مقاله جدید
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pt-4 p-3">
+        <ul class="list-group">
+          {{#each blogs}}
+          <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+            <div class="d-flex flex-column">
+              <h6 class="mb-3 text-sm">{{this.Title}}</h6>
+              <span class="mb-2 text-xs">توضیحات:
+                <span class="text-dark font-weight-bold ms-sm-2">{{this.Description}}</span>
+              </span>
+            </div>
+            <div class="ms-auto text-end">
+              <a class="btn btn-link text-danger text-gradient px-3 mb-0 delete-btn" href="javascript:;"
+                data-id={{this.postId}}>
+                <i class="far fa-trash-alt me-2"></i>حذف
+              </a>
+              <a class="btn btn-link text-dark px-3 mb-0 edit-btn" href="javascript:;" data-id={{this.postId}}
+                data-title="{{this.Title}} " data-description="{{this.Description}} " data-image={{this.Imag}}
+                data-contents="{{this.Contents}} " data-en="{{this.En}} ">
+                <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>ویرایش
+              </a>
+            </div>
+            <div>
+              <img src=/{{this.Imag}} class="blog-card-img" alt={{this.Imag}}
+                style=" height: 100px; max-width: 100%; margin-top: 10px;">
+
+            </div>
+
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- افزودن مقاله -->
+<div class="modal modal-xl fade" id="addBlogModal" style="z-index:99999" tabindex="-1"
+  aria-labelledby="addBlogModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/api/add-blog" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addBlogModalLabel">افزودن مقاله جدید</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="title" class="form-label">عنوان مقاله</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">توضیحات مقاله</label>
+            <textarea class="form-control" id="description" name="description" rows="2" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="imag" class="form-label">آپلود تصویر</label>
+            <input type="file" class="form-control" id="image" name="imag" accept="image/*" required>
+          </div>
+          <div class="mb-3">
+            <label for="contents" class="form-label">محتوا</label>
+            <textarea id="contents" name="contents"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+          <button type="submit" class="btn btn-primary">ارسال مقاله</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ویرایش مقاله -->
+<div class="modal modal-xl fade" id="editBlogModal" style="z-index:9999" tabindex="-1"
+  aria-labelledby="editBlogModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/api/edit-blog/" id="editBlogForm" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editBlogModalLabel">ویرایش مقاله</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editBlogId" name="postId">
+          <div class="mb-3">
+            <label for="editTitle" class="form-label">عنوان مقاله</label>
+            <input type="text" class="form-control" id="editTitle" name="title">
+          </div>
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">توضیحات مقاله</label>
+            <textarea class="form-control" id="editDescription" name="description" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="editImage" class="form-label">آپلود تصویر جدید (اختیاری)</label>
+            <input type="file" class="form-control" id="editImage" name="imag" accept="image/*">
+          </div>
+
+          <div class="mb-3">
+            <label for="editContents" class="form-label">محتوا</label>
+            <textarea id="editContents" name="contents"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+          <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- تایید حذف -->
+<div class="modal fade" id="deleteBlogModal" tabindex="-1" aria-labelledby="deleteBlogModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/api/delete-blog" id="deleteBlogForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteBlogModalLabel">حذف مقاله</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+        </div>
+        <div class="modal-body">
+          <p>آیا مطمئن هستید که می‌خواهید این مقاله را حذف کنید؟ این عمل قابل بازگشت نیست.</p>
+          <input type="hidden" id="deleteBlogId" name="id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+          <button type="submit" class="btn btn-danger">حذف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  tinymce.init({
+    selector: '#contents',
+    height: 500,
+    menubar: false,
+    plugins: [
+      'autolink', 'lists', 'link', 'image',
+      'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks',
+      'fullscreen', 'insertdatetime', 'media', 'table', 'code',
+      'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | template code | help',
+    content_style: "body { font-family:Arial, Helvetica, sans-serif; font-size:14px }",
+    fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt', // اندازه‌های سفارشی فونت
+  });
+  // مقداردهی اولیه TinyMCE برای مودال ویرایش
+  tinymce.init({
+    selector: '#editContents',
+    height: 500,
+    menubar: 'file edit view insert format tools table help',
+    plugins: [
+      'autolink', 'lists', 'link', 'image',
+      'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks',
+      'fullscreen', 'insertdatetime', 'media', 'table', 'code',
+      'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | template code | help',
+    content_style: "body { font-family:Arial, Helvetica, sans-serif; font-size:14px }",
+    fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt', // اندازه‌های سفارشی فونت
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // مدیریت کلیک دکمه حذف
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.id;
+        document.getElementById('deleteBlogId').value = id;
+
+        // نمایش مودال حذف
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteBlogModal'));
+        deleteModal.show();
+      });
+    });
+
+    // پر کردن مودال ویرایش هنگام کلیک روی دکمه ویرایش
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+        const title = this.getAttribute('data-title');
+        const description = this.getAttribute('data-description');
+        const image = this.getAttribute('data-image');
+        const contents = this.getAttribute('data-contents');
+
+
+        // تنظیم اکشن فرم برای شامل کردن postId
+        const editForm = document.getElementById('editBlogForm');
+        editForm.setAttribute('action', `/api/edit-blog/${id}`);
+
+
+        // پر کردن فیلدهای فرم
+        document.getElementById('editBlogId').value = id; // تنظیم ID
+        document.getElementById('editTitle').value = title; // تنظیم عنوان
+        document.getElementById('editDescription').value = description; // تنظیم توضیحات
+        document.getElementById('editContents').value = contents; // تنظیم محتوا
+
+
+        // مدیریت محتوای TinyMCE
+        const contentField = document.getElementById('editContents');
+        contentField.value = contents; // تنظیم محتوای خام برای حالت fallback
+        if (tinymce.get('editContents')) {
+          tinymce.get('editContents').setContent(contents); // تنظیم محتوا در TinyMCE
+        }
+
+
+        // نمایش مودال ویرایش
+        const editModal = new bootstrap.Modal(document.getElementById('editBlogModal'));
+        editModal.show();
+      });
+
+    });
+  });
+
+</script>
+
+
+
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const successMessage = urlParams.get('success');
+  const errorMessage = urlParams.get('error');
+
+  if (successMessage) {
+    Swal.fire({ title: 'موفقیت', text: successMessage, icon: 'success' }); // نمایش پیام موفقیت
+    urlParams.delete('success'); // حذف پارامتر موفقیت
+  }
+
+  if (errorMessage) {
+    Swal.fire({ title: 'خطا', text: errorMessage, icon: 'error' }); // نمایش پیام خطا
+    urlParams.delete('error'); // حذف پارامتر خطا
+  }
+
+  // به‌روزرسانی URL بدون پارامترها
+  if (successMessage || errorMessage) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+</script>

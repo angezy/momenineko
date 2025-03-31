@@ -1,0 +1,384 @@
+<title>{{title}}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="مشاور - بهترین شبکه تامین مالی مشاوره در سراسر جهان.">
+<meta name="keywords" content="مشاور، مشاوره، تامین مالی، شبکه، جهانی">
+<meta name="author" content="نام شما">
+<link rel="icon" type="image/png" href="/public/images/favicon.png">
+</head>
+
+<body class="text-right">
+    {{> __navbar}}
+    <section class="hero-wrap hero-wrap-2" style="background-image: url('/public/images/bg_5.jpg');"
+        data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate mb-5 text-center">
+                    <p class="breadcrumbs mb-0"><span class="mr-2"><a href="index.html">خانه <i
+                                    class="fa fa-chevron-right"></i></a></span> <span>قیمت‌گذاری <i
+                                class="fa fa-chevron-right"></i></span></p>
+                    <h1 class="mb-0 bread">قیمت‌گذاری و پلن‌ها</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section bg-light">
+        <div class="container">
+            <div class="row justify-content-center pb-5 mb-3">
+                <div class="col-md-7 heading-section text-center ftco-animate">
+                    <span class="subheading">قیمت‌ها و پلن‌ها</span>
+                    <h2>پکیج‌های مقرون‌به‌صرفه</h2>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6 ftco-animate d-flex">
+                    <div class="block-7 w-100">
+                        <div class="text-center">
+                            <span class="price"><sup>$</sup> <span class="number">59</span> <sub>/ماه</sub></span>
+                            <span class="excerpt d-block">مشاوره آنلاین</span>
+                            <ul class="pricing-text mb-5">
+                                <li><span class="fa fa-check mr-2"></span>دسترسی آسان</li>
+                                <li><span class="fa fa-check mr-2"></span>مشاوره از راه دور</li>
+                                <li><span class="fa fa-check mr-2"></span>پشتیبانی 24/7</li>
+                            </ul>
+
+                            <a href="#" class="btn btn-primary d-block px-2 py-3" data-toggle="modal"
+                                data-target="#onlineVisitModal" data-plan="مشاوره آنلاین" data-price="59">شروع کنید</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 ftco-animate d-flex">
+                    <div class="block-7 w-100">
+                        <div class="text-center">
+                            <span class="price"><sup>$</sup> <span class="number">99</span> <sub>/ماه</sub></span>
+                            <span class="excerpt d-block">مشاوره حضوری</span>
+                            <ul class="pricing-text mb-5">
+                                <li><span class="fa fa-check mr-2"></span>جلسات حضوری</li>
+                                <li><span class="fa fa-check mr-2"></span>تعامل مستقیم</li>
+                                <li><span class="fa fa-check mr-2"></span>برنامه‌ریزی شخصی</li>
+                            </ul>
+
+                            <a href="#" class="btn btn-primary d-block px-2 py-3" data-toggle="modal"
+                                data-target="#consultationModal" data-plan="مشاوره حضوری" data-price="99">شروع کنید</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- End Booking Modal -->
+
+    {{> __reviews}}
+
+    {{> __contactform}}
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const visitDates = [
+                // Dynamically populated from the server-side template
+                {{ #each VisitTime }}
+            { VisitDate: '{{this.VisitDate}}', Times: [{{ #each this.VTime }}"{{this}}"{{ #unless @last }}, {{/ unless}}{{/ each}}] },
+            {{/ each}}
+        ];
+
+        // Helper function to filter and sort unique visit dates
+        const getUniqueSortedDates = (visits) => {
+            const uniqueDates = {};
+            visits.forEach(visit => {
+                if (!uniqueDates[visit.VisitDate]) {
+                    uniqueDates[visit.VisitDate] = [];
+                }
+                uniqueDates[visit.VisitDate] = uniqueDates[visit.VisitDate].concat(visit.Times);
+            });
+
+            return Object.keys(uniqueDates)
+                .sort()
+                .map(date => ({ VisitDate: date, Times: uniqueDates[date] }));
+        };
+
+        const uniqueSortedDates = getUniqueSortedDates(visitDates);
+
+        const calendarContainer = document.querySelector('.calendar');
+        const timeSlotsContainer = document.querySelector('.time-slots');
+
+        // Populate calendar with unique sorted dates
+        uniqueSortedDates.forEach(date => {
+            const dateButton = document.createElement('button');
+            dateButton.className = 'btn btn-primary d-block px-2 py-3 visit-date-btn';
+            dateButton.textContent = date.VisitDate;
+            dateButton.dataset.times = date.Times.join(',');
+            calendarContainer.appendChild(dateButton);
+        });
+
+        // Handle click on visit date buttons
+        calendarContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('visit-date-btn')) {
+                // Clear existing time slots
+                timeSlotsContainer.innerHTML = '';
+
+                // Get times from the data attribute
+                const times = event.target.dataset.times.split(',');
+
+                // Populate time slots
+                times.forEach(time => {
+                    const timeButton = document.createElement('button');
+                    timeButton.className = 'btn btn-outline-primary m-1';
+                    timeButton.textContent = time;
+                    timeSlotsContainer.appendChild(timeButton);
+                });
+
+                // Highlight the selected date
+                document.querySelectorAll('.visit-date-btn').forEach(btn => btn.classList.remove('selected'));
+                event.target.classList.add('selected');
+            }
+        });
+    });
+    </script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="consultationModal" tabindex="-1" role="dialog" aria-labelledby="consultationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="consultationModalLabel">انتخاب نوبت مشاوره تلفنی</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>نرگس مومنی نکو</p>
+                    <p>در زمان نوبت: تماس تلفنی بصورت خودکار از طرف دکترتو برگزار می‌شود.</p>
+                    <div class="calendar">
+                        {{#each (filterTodayOrFuture (sort VisitTime 'VisitDate'))}}
+                        <button class="btn btn-primary d-block px-2 py-3 " data-times="{{this.VTime}}">{{convertToShamsi
+                            this.VisitDate}}</button>
+                        {{/each}}
+                    </div>
+                    <div class="time-slots">
+                        <!-- Time slots will be dynamically updated -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-primary">رزرو نوبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Online Visit -->
+    <div class="modal fade" id="onlineVisitModal" tabindex="-1" role="dialog" aria-labelledby="onlineVisitModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="onlineVisitModalLabel">انتخاب نوبت مشاوره آنلاین</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>نرگس مومنی نکو</p>
+                    <p>در زمان نوبت: جلسه آنلاین از طریق پلتفرم برگزار می‌شود.</p>
+                    <div class="calendar">
+                        {{#each (filterTodayOrFuture (sort onlineVisitTime 'VisitDate'))}}
+                        <button class="btn btn-primary d-block px-2 py-3 " data-times="{{this.VTime}}">{{convertToShamsi
+                            this.VisitDate}}</button>
+                        {{/each}}
+                    </div>
+                    <div class="time-slots">
+                        <!-- Time slots will be dynamically updated -->
+                        <button class="btn btn-primary d-block px-2 py-3 "
+                            data-times="{{this.VTime}}">{{this.VTime}}</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-primary">رزرو نوبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const onlineDateButtons = document.querySelectorAll('.online-visit-date-btn');
+            const onlineTimeSlotsContainer = document.querySelector('.time-slots');
+
+            onlineDateButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Clear existing time slots
+                    onlineTimeSlotsContainer.innerHTML = '';
+
+                    // Get times from the data attribute
+                    const times = button.getAttribute('data-times').split(',');
+
+                    // Populate time slots
+                    times.forEach(time => {
+                        const timeButton = document.createElement('button');
+                        timeButton.textContent = time;
+                        onlineTimeSlotsContainer.appendChild(timeButton);
+                    });
+
+                    // Highlight the selected date
+                    onlineDateButtons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                });
+            });
+        });
+    </script>
+
+
+
+
+    <div class="sc-71843f-0 fMcgKM">
+        <div class="sc-71843f-11 bLjnMC"><button aria-label="بستن" class="sc-df647fad-0 sc-71843f-12 cJudki iOlsVB"><svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="sc-5feff41b-0 kOibvs">
+                    <path fill-rule="evenodd"
+                        d="M15.442 4.558a.625.625 0 0 1 0 .884L10.884 10l4.558 4.558a.625.625 0 0 1-.884.884L10 10.884l-4.558 4.558a.625.625 0 1 1-.884-.884L9.116 10 4.558 5.442a.625.625 0 1 1 .884-.884L10 9.116l4.558-4.558a.625.625 0 0 1 .884 0"
+                        clip-rule="evenodd"></path>
+                </svg></button><span style="padding: 0px 30px;">انتخاب نوبت مشاوره تلفنی</span></div>
+        <section class="sc-71843f-3 eRRZMV">
+            <div class="sc-732d5513-0 kdzysb">
+                <div class="sc-732d5513-2 dVsMkQ"></div>
+                <div class="sc-732d5513-1 jzumSZ"><span
+                        style="box-sizing: border-box; display: block; overflow: hidden; width: initial; height: initial; background: none; opacity: 1; border: 0px; margin: 0px; padding: 0px; position: relative;"><span
+                            style="box-sizing: border-box; display: block; width: initial; height: initial; background: none; opacity: 1; border: 0px; margin: 0px; padding: 100% 0px 0px;"></span><img
+                            alt="نرگس مومنی نکو"
+                            src="https://statics.doctoreto.com/preset:sharp/resize:fill:150:150:0/gravity:sm/plain/s3://drto/avatar/doctor/2023/10/9aUMTvSUxSn0FTflMXbZGB9P6Fxohz2NDDetqGcq.jpg"
+                            decoding="async" data-nimg="responsive"
+                            style="position: absolute; inset: 0px; box-sizing: border-box; padding: 0px; border: medium; margin: auto; display: block; width: 0px; height: 0px; min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%;"><noscript></noscript></span>
+                </div>
+            </div>
+            <div class="sc-71843f-6 gviaVP">
+                <div class="sc-71843f-5 jtjRFv">نرگس مومنی نکو</div>
+            </div>
+        </section>
+        <div class="sc-71843f-13 dqEZFQ"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 21"
+                class="sc-5feff41b-0 fexnTR">
+                <path fill="#667085"
+                    d="M18.308 15.775c0 .3-.066.608-.208.908a3.4 3.4 0 0 1-.567.85c-.408.45-.858.775-1.366.984-.5.208-1.042.316-1.625.316-.85 0-1.759-.2-2.717-.608a14.6 14.6 0 0 1-2.867-1.65 24 24 0 0 1-2.733-2.333A24 24 0 0 1 3.9 11.517c-.683-.95-1.233-1.9-1.633-2.842q-.6-1.425-.6-2.725c0-.567.1-1.108.3-1.608.2-.509.516-.975.958-1.392.533-.525 1.117-.783 1.733-.783.234 0 .467.05.675.15.217.1.409.25.559.466l1.933 2.725c.15.209.258.4.333.584.075.175.117.35.117.508 0 .2-.058.4-.175.592a2.8 2.8 0 0 1-.467.591L7 8.442a.45.45 0 0 0-.133.333c0 .067.008.125.025.192.025.066.05.116.066.166.15.275.409.634.775 1.067.375.433.775.875 1.209 1.317.45.441.883.85 1.325 1.225.433.366.791.616 1.075.766.041.017.091.042.15.067a.6.6 0 0 0 .208.033c.142 0 .25-.05.342-.141l.633-.625q.312-.315.6-.467a1.1 1.1 0 0 1 .592-.175c.158 0 .325.033.508.108q.273.113.583.325l2.759 1.959c.216.15.366.325.458.533.083.208.133.417.133.65M15.417 8c0-.5-.392-1.267-.975-1.892-.534-.575-1.242-1.025-1.942-1.025">
+                </path>
+                <path stroke="#667085" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M15.417 8c0-.5-.392-1.267-.975-1.892-.534-.575-1.242-1.025-1.942-1.025M18.333 8A5.83 5.83 0 0 0 12.5 2.167">
+                </path>
+            </svg><span>در زمان نوبت، تماس تلفنی بصورت خودکار از طرف دکترِتو برقرار می‌شود.</span></div>
+        <div class="sc-71843f-10 hiPHcn">
+            <div class="sc-1f317f1e-0 fxKgEx">
+                <div class="sc-1f317f1e-1 jELjql">
+                    <div class="sc-1f317f1e-2 wtIWY">
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">امروز</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۸ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">_</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 dHKwxZ">
+                            <div class="sc-cfc91a92-0 DFVmK">شنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۹ فروردین</div>
+                            <div class="sc-cfc91a92-2 bjCFoS">6 نوبت</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">یکشنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۰ فروردین</div>
+                            <div class="sc-cfc91a92-2 bjCFoS">6 نوبت</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">دوشنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۱ فروردین</div>
+                            <div class="sc-cfc91a92-2 bjCFoS">6 نوبت</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">سه‌شنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۲ فروردین</div>
+                            <div class="sc-cfc91a92-2 bjCFoS">6 نوبت</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">چهارشنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۳ فروردین</div>
+                            <div class="sc-cfc91a92-2 bjCFoS">3 نوبت</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">پنج‌شنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۴ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">_</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">جمعه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۵ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">_</div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">شنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۶ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">
+                                <div class="sc-cfc91a92-4 kTxKyb">
+                                    <div data-testid="spinner" class="sc-a364f3bb-3 esmZMe">
+                                        <div class="sc-a364f3bb-2 wKUKQ"></div>
+                                        <div class="sc-a364f3bb-1 kEELWm"></div>
+                                        <div class="sc-a364f3bb-0 hhGtLQ"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">یکشنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۷ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">
+                                <div class="sc-cfc91a92-4 kTxKyb">
+                                    <div data-testid="spinner" class="sc-a364f3bb-3 esmZMe">
+                                        <div class="sc-a364f3bb-2 wKUKQ"></div>
+                                        <div class="sc-a364f3bb-1 kEELWm"></div>
+                                        <div class="sc-a364f3bb-0 hhGtLQ"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sc-cfc91a92-3 kMiIYm">
+                            <div class="sc-cfc91a92-0 DFVmK">دوشنبه</div>
+                            <div class="sc-cfc91a92-1 hbcaID">۱۸ فروردین</div>
+                            <div class="sc-cfc91a92-2 bolEKf">
+                                <div class="sc-cfc91a92-4 kTxKyb">
+                                    <div data-testid="spinner" class="sc-a364f3bb-3 esmZMe">
+                                        <div class="sc-a364f3bb-2 wKUKQ"></div>
+                                        <div class="sc-a364f3bb-1 kEELWm"></div>
+                                        <div class="sc-a364f3bb-0 hhGtLQ"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><button aria-label="صفحه بعد" class="sc-df647fad-0 sc-1f317f1e-3 cJudki dLIgbC"><svg
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="sc-5feff41b-0 cjJwIQ">
+                            <path
+                                d="M16.03 4.47a.75.75 0 0 1 .073.976l-.073.084L9.561 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073-7-7a.75.75 0 0 1-.073-.976l.073-.084 7-7a.75.75 0 0 1 1.06 0">
+                            </path>
+                        </svg></button>
+                </div>
+                <div class="sc-1f317f1e-7 gxCtWN">
+                    <div class="sc-1f317f1e-8 gUHMYq">شنبه ۹ فروردین</div>
+                    <div class="sc-1f317f1e-5 jAPgtz">
+                        <div class="sc-1f317f1e-6 iFTlFT"><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">08:00</button><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">09:00</button><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">10:00</button><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">14:00</button><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">15:00</button><button
+                                class="sc-df647fad-0 sc-1f317f1e-9 cJudki lamBUr">16:00</button></div>
+                    </div>
+                </div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

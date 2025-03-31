@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const router = express.Router();
-const dbConfig = require('../config/db'); // Database connection utility
+const dbConfig = require('../config/dbConfig'); // Database connection utility
 
 
 
@@ -41,14 +41,13 @@ router.post('/add-blog', upload.single('imag'), async (req, res) => {
             .input('Imag', sql.NVarChar, imageFile)
             .input('Contents', sql.NText, contents)
             .query(`
-                INSERT INTO dbo.BlogPosts_tbl (Title, Description, Imag, Contents, CreatedAt)
+                INSERT INTO dbo.Blogs_tbl (Title, Description, Imag, Contents, CreatedAt)
                 VALUES (@Title, @Description, @Imag, @Contents, GETDATE())
             `); 
-    
-        return res.redirect(`${referrer}?success=Blog+post+added+successfully`);
+return res.redirect(`${referrer}?success=پست+بلاگ+با+موفقیت+افزوده+شد`);
     } catch (err) {
-        console.error('Error updating blog post:', err);
-        return res.redirect(`${referrer}?error=Error+adding+blog+post`);
+        console.error('خطایی در به روز رسانی پست بلاگ رخ داد:', err);
+        return res.redirect(`${referrer}?error=خطایی+در+افزودن+پست+بلاگ`);
     } finally {
         sql.close();
       }
@@ -56,40 +55,6 @@ router.post('/add-blog', upload.single('imag'), async (req, res) => {
 
 
 
-// Route to delete a blog post by ID
-router.delete('/delete-blog/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const pool = await sql.connect(dbConfig);
-
-        // Get the image file path before deleting the post
-        const post = await pool.request()
-            .input('PostId', sql.Int, id)
-            .query('SELECT Imag FROM dbo.BlogPosts_tbl WHERE postId = @PostId');
-
-        if (post.recordset.length === 0) {
-            return res.status(404).json({ message: 'Blog post not found' });
-        }
-
-        const imagePath = post.recordset[0].Imag;
-        if (imagePath) {
-            deleteFile(path.join(__dirname, '..', imagePath));
-        }
-
-        // Delete the blog post
-        await pool.request()
-            .input('PostId', sql.Int, id)
-            .query('DELETE FROM dbo.BlogPosts_tbl WHERE postId = @PostId');
-
-        res.status(200).json({ message: 'Blog post deleted successfully' });
-    } catch (err) {
-        console.error('Error deleting blog post:', err);
-        res.status(500).json({ message: 'Error deleting blog post' });
-    } finally {
-        sql.close();
-      }
-});
 
 // Route to edit a blog post
 router.post('/edit-blog/:id', upload.single('imag'), async (req, res) => {
@@ -104,10 +69,10 @@ router.post('/edit-blog/:id', upload.single('imag'), async (req, res) => {
         // Check if the post exists
         const existingPost = await pool.request()
             .input('PostId', sql.Int, id)
-            .query('SELECT Imag FROM dbo.BlogPosts_tbl WHERE postId = @PostId');
+            .query('SELECT Imag FROM dbo.Blogs_tbl WHERE postId = @PostId');
 
         if (existingPost.recordset.length === 0) {
-            return res.status(404).json({ message: 'Blog post not found' });
+            return res.redirect(`${referer}?error=پست+بلاگ+یافت+نشد`);
         }
 
         // Delete old image if a new one is uploaded
@@ -116,14 +81,14 @@ router.post('/edit-blog/:id', upload.single('imag'), async (req, res) => {
             try {
                 deleteFile(path.join(__dirname, '..', oldImagePath));
             } catch (err) {
-                console.error('Error deleting old image:', err);
+                console.error('(دوباره تلاش کنید)Error deleting old image:', err);
             }
         }
 
         // Construct the query based on whether a new image is provided
         const query = imageFile
             ? `
-                UPDATE dbo.BlogPosts_tbl
+                UPDATE dbo.Blogs_tbl
                 SET Title = @Title,
                     Description = @Description,
                     Imag = @Imag,
@@ -132,7 +97,7 @@ router.post('/edit-blog/:id', upload.single('imag'), async (req, res) => {
                 WHERE postId = @PostId
             `
             : `
-                UPDATE dbo.BlogPosts_tbl
+                UPDATE dbo.Blogs_tbl
                 SET Title = @Title,
                     Description = @Description,
                     Contents = @Contents,
@@ -156,14 +121,54 @@ router.post('/edit-blog/:id', upload.single('imag'), async (req, res) => {
         await request.query(query);
 
         // Redirect back with success message
-        return res.redirect(`${referer}?success=Blog+post+updated+successfully`);
+return res.redirect(`${referer}?success=پست+بلاگ+با+موفقیت+به+روز+رسانی+شد`);
     } catch (err) {
-        console.error('Error updating blog post:', err);
-        return res.redirect(`${referer}?error=Error+updating+blog+post`);
+        console.error('خطایی در به روز رسانی پست بلاگ رخ داد:', err);
+        return res.redirect(`${referer}?error=خطایی+در+به+روز+رسانی+پست+بلاگ`);
     } finally {
         sql.close();
       }
 });
 
+// Route to delete a blog post
+router.post('/delete-blog', async (req, res) => {
+    const { id } = req.body; // Blog post ID
+    const referrer = req.get('Referer') || '/'; // Default to home page if no referrer
+
+    try {
+        const pool = await sql.connect(dbConfig);
+
+        // Check if the post exists
+        const existingPost = await pool.request()
+            .input('PostId', sql.Int, id)
+            .query('SELECT Imag FROM dbo.Blogs_tbl WHERE postId = @PostId');
+
+        if (existingPost.recordset.length === 0) {
+            return res.redirect(`${referrer}?error=پست+بلاگ+یافت+نشد`);
+        }
+
+        // Delete the image file if it exists
+        const imagePath = existingPost.recordset[0].Imag;
+        if (imagePath) {
+            try {
+                deleteFile(path.join(__dirname, '..', imagePath));
+            } catch (err) {
+                console.error('Error deleting image file:', err);
+            }
+        }
+
+        // Delete the blog post from the database
+        await pool.request()
+            .input('PostId', sql.Int, id)
+            .query('DELETE FROM dbo.Blogs_tbl WHERE postId = @PostId');
+
+        return res.redirect(`${referrer}?success=پست+بلاگ+با+موفقیت+حذف+شد`);
+    } catch (err) {
+        console.error('خطایی در حذف پست بلاگ رخ داد:', err);
+        return res.redirect(`${referrer}?error=خطایی+در+حذف+پست+بلاگ`);
+    } finally {
+        sql.close();
+    }
+});
 
 module.exports = router;

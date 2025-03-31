@@ -224,3 +224,10 @@
 
 })(jQuery);
 
+
+
+
+function block() { $(".sc").prop('disabled', true); }
+function bon() { $(".sc").prop('disabled', false); }
+function son() { $(".fb").addClass("spinner-border spinner-border-sm"); }
+function soff() { $(".fb").removeClass("spinner-border spinner-border-sm"); }

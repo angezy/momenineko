@@ -1,0 +1,90 @@
+<section class="ftco-appointment ftco-section img" style="background-image: url(/public/images/bg_2.jpg);">
+	<div class="overlay"></div>
+	<div class="container rtl">
+		<div class="row">
+			<div class="col-md-6 half ftco-animate">
+				<h2 class="mb-4"> لطفا نظر خود را ثبت کنید</h2>
+				<form id="reviewForm" action="/reviews" method="POST" class="appointment">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<input name="name" type="text" class="form-control" placeholder="نام شما" required>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<input name="phone" type="text" class="form-control" placeholder="شماره تماس (اختیاری)">
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<div class="form-field">
+									<div class="select-wrap">
+										<div class="icon"><span class="fa fa-chevron-down"></span></div>
+										<select name="problem" id="" class="form-control" required>
+											<option value="">موضوع مراجعه</option>
+											<option value="مشکل رابطه">مشکل رابطه</option>
+											<option value="مشاوره زوجین">مشاوره زوجین</option>
+											<option value="درمان افسردگی">درمان افسردگی</option>
+											<option value="مشکل خانوادگی">مشکل خانوادگی</option>
+											<option value="مشکل شخصی">مشکل شخصی</option>
+											<option value="مشکل کسب و کار">مشکل کسب و کار</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<textarea name="comment" id="" cols="30" rows="7" class="form-control"
+									placeholder="نظر خود را بنویسید" required></textarea>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<button type="submit"  class="btn btn-primary py-3 px-4 sc"><span class="fb"></span>ثبت نطر</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+	document.getElementById('reviewForm').addEventListener('submit', async function (event) {
+		event.preventDefault(); // Prevent default form submission
+		block();
+		son();
+		const formData = new FormData(this);
+		const data = Object.fromEntries(formData.entries());
+
+		try {
+			const response = await fetch('/reviews', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
+
+			if (response.ok) {
+				Swal.fire('Success', 'نظر شما ارسال شد!', 'success');
+				this.reset();
+				bon();
+				soff();
+			} else {
+				const error = await response.json();
+				Swal.fire('Error', error.message || 'اتفاقی پیش اومد!', 'error');
+				bon();
+				soff();
+			}
+
+		} catch (err) {
+			Swal.fire('Error', 'نظر شما ثبت نشد !', 'error');
+			bon();
+			soff();
+		}
+	});
+</script>
